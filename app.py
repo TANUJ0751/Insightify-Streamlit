@@ -28,39 +28,43 @@ def run_flow(message: str) -> dict:
 # Main function
 def main():
     st.markdown(
-    """
-    <style>
-    .stButton>button:hover {
-        background-color: #1b0e4a; 
-        color: white; 
-    }
+        """
+        <style>
+        .stButton>button:hover {
+            background-color: #1b0e4a; 
+            color: white; 
+        }
+        
+        .stApp {
+            background-color: #1b0e4a; 
+        }
+        
+        [data-testid="stSidebar"] {
+            background-color: #302a47; 
+        }
+        header {
+            background-color: #1b0e4a !important;
+        }
+        
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.sidebar.title(''' **Insightly** : A Social Media Performance App ''')
     
-    .stApp {
-        background-color: #1b0e4a; 
-    }
-    
-    
-    [data-testid="stSidebar"] {
-        background-color: #302a47; 
-    }
-    header {
-        background-color: #1b0e4a !important;
-    }
-    
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-    st.sidebar.title(''' **Insightify** : A Social Media Performance App ''')
-    
-
-    # Initialize session state for chat history
+    # Initialize session state for chat history and text input
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
     if "input_text" not in st.session_state:
         st.session_state["input_text"] = ""
+
     # Input field for the user
-    message = st.sidebar.text_area(value=st.session_state["input_text"], placeholder="How can we assist you today?",key="input_text")
+    message = st.sidebar.text_area(
+        "",
+        value=st.session_state["input_text"],
+        placeholder="How can we assist you today?",
+        key="input_text",  # Link the input to session state
+    )
 
     # Button to send the query
     if st.sidebar.button("Give Insights"):
@@ -77,25 +81,29 @@ def main():
             # Append user message and response to chat history
             st.session_state["messages"].append({"user": message, "bot": response_text})
 
+            # Clear the text area by resetting session state
+            st.session_state["input_text"] = ""
+
         except Exception as e:
             st.error(str(e))
 
     # Display chat history
     st.subheader("Chat History")
     st.write("--------")
-    bot_color='#6af778'
-    user_color='#f4fa57'
+    bot_color = '#6af778'
+    user_color = '#f4fa57'
     for chat in st.session_state["messages"]:
         col1, col2 = st.columns([4, 1])
         with col1:
-            st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>",unsafe_allow_html=True)
-            st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>",unsafe_allow_html=True)
+            st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>", unsafe_allow_html=True)
         
         with col2:
-            if st.button(f"Copy", key=chat['bot'],):
+            if st.button(f"Copy", key=chat['bot']):
                 pyperclip.copy(chat['bot'])  # Copy the bot's message to clipboard
                 st.success("Copied!")
-                  # Adds a divider for better readability
+                
+        # Adds a divider for better readability
         st.divider()
 if __name__ == "__main__":
     main()
