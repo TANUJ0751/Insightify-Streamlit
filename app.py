@@ -1,10 +1,10 @@
 import requests
 import streamlit as st
 import pyperclip
+import os
 from PIL import Image
 
 APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
-
 ENDPOINT = "social_media"
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
 LANGFLOW_ID = "a429dc71-ad2c-4b98-b5b3-08779b951c6a"
@@ -79,7 +79,9 @@ def main():
             return
 
         try:
-            gif_path = "C:\Users\lenovo\Downloads\Insightify-Streamlit-main\app.py"
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            assets_folder = os.path.join(current_dir, "assets")
+            gif_path = os.path.join(assets_folder, "KEaF.gif")
             gif = Image.open(gif_path)
             spinner = st.image(gif, caption="Loading...", use_column_width=True)
 
