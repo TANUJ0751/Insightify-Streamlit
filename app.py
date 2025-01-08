@@ -1,15 +1,12 @@
 import requests
 import streamlit as st
-import pyperclip
 import os
-from PIL import Image
 
+# Constants
 APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
 ENDPOINT = "social_media"
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
 LANGFLOW_ID = "a429dc71-ad2c-4b98-b5b3-08779b951c6a"
-FLOW_ID = "b2965fbd-2779-4c01-b07d-3961555143c6"
-ENDPOINT = "social_media"
 
 def run_flow(message: str) -> dict:
     api_url = f"{BASE_API_URL}/lf/{LANGFLOW_ID}/api/v1/run/{ENDPOINT}"
@@ -60,7 +57,7 @@ def main():
         unsafe_allow_html=True,
     )
     st.sidebar.title(''' **Insightify** : A Social Media Performance App ''')
-    
+
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
     if "input_text" not in st.session_state:
@@ -82,9 +79,15 @@ def main():
             current_dir = os.path.dirname(os.path.abspath(__file__))
             assets_folder = os.path.join(current_dir, "Assets")
             gif_path = os.path.join(assets_folder, "spinner.gif")
-            gif_html = f'<img src="{gif_path}" width="100%">'
-            st.video(gif_html)
-            
+
+            # Ensure the GIF exists
+            if not os.path.exists(gif_path):
+                st.error("Spinner GIF not found at path: " + gif_path)
+                return
+
+            spinner = st.empty()
+            spinner.image(gif_path, width=100)
+
             response = run_flow(message)
             response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
 
