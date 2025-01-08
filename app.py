@@ -3,8 +3,6 @@ import streamlit as st
 import pyperclip
 
 # Load environment variables
-
-# Load API key from environment variable
 APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
 
 ENDPOINT = "analysis"
@@ -82,21 +80,6 @@ def main():
         unsafe_allow_html=True,
     )
 
-    # Spinner state in session
-    if "show_spinner" not in st.session_state:
-        st.session_state["show_spinner"] = False
-
-    # Show spinner if active
-    if st.session_state["show_spinner"]:
-        st.markdown(
-            """
-            <div class="custom-spinner">
-                <div class="spinner"></div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
     st.sidebar.title("**Insightify** : A Social Media Performance App")
 
     # Initialize session state for chat history
@@ -119,11 +102,17 @@ def main():
             st.error("Please enter a message")
             return
 
-        try:
-            # Show spinner
-            st.session_state["show_spinner"] = True
-            st.experimental_rerun()
+        # Show spinner
+        st.markdown(
+            """
+            <div class="custom-spinner">
+                <div class="spinner"></div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
+        try:
             # Run the API call
             response = run_flow(message)
             response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
@@ -133,10 +122,6 @@ def main():
 
         except Exception as e:
             st.error(str(e))
-        finally:
-            # Hide spinner
-            st.session_state["show_spinner"] = False
-            st.experimental_rerun()
 
     # Display chat history
     st.subheader("Chat History")
