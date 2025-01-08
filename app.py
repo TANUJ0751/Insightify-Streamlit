@@ -7,7 +7,7 @@ APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
 
 ENDPOINT = "analysis"
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
-LANGFLOW_ID = "a429dc71-ad2c-4b98-b5b3-08779b951c6"
+LANGFLOW_ID = "a429dc71-ad2c-4b98-b5b3-08779b951c6a"
 FLOW_ID = "b2965fbd-2779-4c01-b07d-3961555143c6"
 ENDPOINT = "social_media"  # The endpoint name of the flow
 
@@ -79,14 +79,15 @@ def main():
         """,
         unsafe_allow_html=True,
     )
-
     st.sidebar.title("**Insightify** : A Social Media Performance App")
 
-    # Initialize session state for chat history
+    # Initialize session state for chat history and loader
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
     if "input_text" not in st.session_state:
         st.session_state["input_text"] = ""
+    if "loading" not in st.session_state:
+        st.session_state["loading"] = False
 
     # Input field for the user
     message = st.sidebar.text_area(
@@ -102,26 +103,29 @@ def main():
             st.error("Please enter a message")
             return
 
-        # Show spinner
-        st.markdown(
-            """
-            <div class="custom-spinner">
-                <div class="spinner"></div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        # Show the spinner
+        st.session_state["loading"] = True
 
         try:
-            # Run the API call
             response = run_flow(message)
             response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
 
             # Append user message and response to chat history
             st.session_state["messages"].append({"user": message, "bot": response_text})
-
         except Exception as e:
             st.error(str(e))
+        finally:
+            # Hide the spinner after processing
+            st.session_state["loading"] = False
+
+    # Display the loader
+    if st.session_state["loading"]:
+        spinner_html = """
+        <div class="custom-spinner">
+            <div class="spinner"></div>
+        </div>
+        """
+        st.markdown(spinner_html, unsafe_allow_html=True)
 
     # Display chat history
     st.subheader("Chat History")
