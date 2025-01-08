@@ -7,7 +7,7 @@ import pyperclip
 
 # Load environment variables
 load_dotenv()
-APPLICATION_TOKEN = os.environ.get("APP_TOKEN")
+APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
 
 ENDPOINT = "analysis"
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
