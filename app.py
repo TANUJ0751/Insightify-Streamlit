@@ -59,13 +59,16 @@ def main():
         st.session_state["input_text"] = ""
 
     # Input field for the user
-    message = st.sidebar.form(
+    message = st.sidebar.text_area(
         "",
         value=st.session_state["input_text"],
         placeholder="How can we assist you today?",
         key="input_text",  # Link the input to session state
     )
-
+    with st.sidebar.form("my_form"):
+        st.write("Inside the form")
+        message=st.text_area("Enter Input")
+        st.form_submit_button('Submit my picks')
     # Form handling
     with st.sidebar.form(key='my_form'):
         submit_button = st.form_submit_button("Submit", icon="paper-plane")
