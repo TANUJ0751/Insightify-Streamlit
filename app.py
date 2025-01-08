@@ -102,8 +102,9 @@ def main():
                 
         # Adds a divider for better readability
         st.divider()
+    
+    # Clear the text area **after** the divider is rendered
+    st.session_state["input_text"] = ""  # Ensure this happens after the divider
 
-    # Clear the text area after creating the divider
-    st.session_state["input_text"] = ""
 if __name__ == "__main__":
     main()
