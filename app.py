@@ -77,7 +77,7 @@ def main():
     )
 
     # Button to send the query
-    if st.sidebar.button("Send",icon=":material/send:",type="primary"):
+    if st.sidebar.button("Send",icon=":material/send:",type="secondary"):
         if not message.strip():
             st.error("Please enter a message")
             return
