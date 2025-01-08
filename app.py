@@ -58,19 +58,18 @@ def main():
     if "input_text" not in st.session_state:
         st.session_state["input_text"] = ""
 
+    
     # Input field for the user
-    
-    
-    # Form handling
-    with st.sidebar.form(key='my_form'):
-        message = st.text_area(
+    message = st.sidebar.text_area(
         "",
         value=st.session_state["input_text"],
         placeholder="How can we assist you today?",
-        key="input_text",)
-        st.form_submit_button("Submit", icon="paper-plane")
+        key="input_text",  # Link the input to session state
+    )
 
-        
+    # Button to send the query
+    submit_button = st.sidebar.form_submit_button("Submit", icon="paper-plane")
+    if submit_button:
         if not message.strip():
             st.error("Please enter a message")
             return
@@ -83,9 +82,10 @@ def main():
 
             # Append user message and response to chat history
             st.session_state["messages"].append({"user": message, "bot": response_text})
+            
 
         except Exception as e:
-            st.error(f"Error: {str(e)}")
+            st.error(str(e))
 
     # Display chat history
     st.subheader("Chat History")
@@ -102,12 +102,9 @@ def main():
             if st.button(f"Copy", key=chat['bot']):
                 pyperclip.copy(chat['bot'])  # Copy the bot's message to clipboard
                 st.success("Copied!")
-            
+                
         # Adds a divider for better readability
         st.divider()
-    
-    # Clear the text area **after** the divider is created
-    st.session_state["input_text"] = ""
     
 if __name__ == "__main__":
     main()
