@@ -35,6 +35,10 @@ def main():
             color: white; 
             border-color: #f4fa57;
         }
+        .stButton>button:active {
+        border-color: #1b0e4a;  /* Border color after clicking */
+        color: #1b0e4a;  /* Text color after clicking */
+    }
         
         .stApp {
             background-color: #1b0e4a; 
