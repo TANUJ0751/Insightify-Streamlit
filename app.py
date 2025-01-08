@@ -50,23 +50,28 @@ def main():
         """,
         unsafe_allow_html=True,
     )
-    st.sidebar.title(''' **Insightify** : A Social Media Performance App ''')
+    st.sidebar.title(''' **Insightly** : A Social Media Performance App ''')
     
-    # Initialize session state for chat history and text input
+    # Initialize session state for chat history
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
     if "input_text" not in st.session_state:
         st.session_state["input_text"] = ""
 
+    # Callback function to clear the text area
+    def clear_text():
+        st.session_state["input_text"] = ""
+
     # Input field for the user
     message = st.sidebar.text_area(
         "",
+        value=st.session_state["input_text"],
         placeholder="How can we assist you today?",
         key="input_text",  # Link the input to session state
     )
 
     # Button to send the query
-    if st.sidebar.button("Give Insights"):
+    if st.sidebar.button("Give Insights", on_click=clear_text):
         if not message.strip():
             st.error("Please enter a message")
             return
@@ -79,9 +84,6 @@ def main():
 
             # Append user message and response to chat history
             st.session_state["messages"].append({"user": message, "bot": response_text})
-
-            # Clear the text area by resetting session state
-            st.session_state["input_text"] = ""
 
         except Exception as e:
             st.error(str(e))
