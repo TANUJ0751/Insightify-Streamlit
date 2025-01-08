@@ -1,19 +1,16 @@
 import requests
 import streamlit as st
 import pyperclip
+from PIL import Image
 
-# Load environment variables
-
-# Load API key from environment variable
 APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
 
-ENDPOINT = "analysis"
+ENDPOINT = "social_media"
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
 LANGFLOW_ID = "a429dc71-ad2c-4b98-b5b3-08779b951c6a"
 FLOW_ID = "b2965fbd-2779-4c01-b07d-3961555143c6"
-ENDPOINT = "social_media" # The endpoint name of the flow
+ENDPOINT = "social_media"
 
-# Function to run the flow
 def run_flow(message: str) -> dict:
     api_url = f"{BASE_API_URL}/lf/{LANGFLOW_ID}/api/v1/run/{ENDPOINT}"
     payload = {
@@ -25,7 +22,6 @@ def run_flow(message: str) -> dict:
     response = requests.post(api_url, json=payload, headers=headers)
     return response.json()
 
-# Main function
 def main():
     st.markdown(
         """
@@ -36,12 +32,12 @@ def main():
             border-color: #f4fa57;
         }
         .stButton>button:active {
-        border-color: white;  /* Border color after clicking */
-        color: white;  /* Text color after clicking */
+        border-color: white;  
+        color: white;  
         }
         .stButton{
-        border-color: white;  /* Border color after clicking */
-        color: white;  /* Text color after clicking */
+        border-color: white;  
+        color: white;  
         }
         
         .stApp {
@@ -59,58 +55,52 @@ def main():
         header {
             background-color: #1b0e4a !important;
         }
-        
         </style>
         """,
         unsafe_allow_html=True,
     )
     st.sidebar.title(''' **Insightify** : A Social Media Performance App ''')
     
-    # Initialize session state for chat history
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
     if "input_text" not in st.session_state:
         st.session_state["input_text"] = ""
 
-    
-    # Input field for the user
     message = st.sidebar.text_area(
         "",
         value=st.session_state["input_text"],
         placeholder="How can we assist you today?",
-        key="input_text",  # Link the input to session state
+        key="input_text",
     )
 
-    # Button to send the query
-    if st.sidebar.button("Generate",icon=":material/send:",type="secondary"):
+    if st.sidebar.button("Generate", icon=":material/send:", type="secondary"):
         if not message.strip():
             st.error("Please enter a message")
             return
 
         try:
-            with st.spinner("Processing..."):
-                response = run_flow(message)
-                
-                response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
+            gif_path = "C:\Users\lenovo\Downloads\Insightify-Streamlit-main\app.py"
+            gif = Image.open(gif_path)
+            spinner = st.image(gif, caption="Loading...", use_column_width=True)
 
-            # Append user message and response to chat history
+            response = run_flow(message)
+            response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
+
             st.session_state["messages"].append({"user": message, "bot": response_text})
-            
+
+            spinner.empty()
 
         except Exception as e:
             st.error(str(e))
 
-    # Display chat history
     st.subheader("Chat History")
     st.write("--------")
     bot_color = '#6af778'
     user_color = '#f4fa57'
     for chat in st.session_state["messages"]:
-        
-        
-        st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
         st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>", unsafe_allow_html=True)
         st.divider()
-    
+
 if __name__ == "__main__":
     main()
