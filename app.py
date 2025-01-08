@@ -71,7 +71,7 @@ def main():
     )
 
     # Button to send the query
-    if st.sidebar.button("Give Insights", on_click=clear_text):
+    if st.sidebar.button("Give Insights"):
         if not message.strip():
             st.error("Please enter a message")
             return
@@ -106,5 +106,6 @@ def main():
                 
         # Adds a divider for better readability
         st.divider()
+        clear_text()
 if __name__ == "__main__":
     main()
