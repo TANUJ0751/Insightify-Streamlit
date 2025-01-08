@@ -51,15 +51,16 @@ def main():
     """,
     unsafe_allow_html=True,
 )
-    st.sidebar.title(''' **Insightly** : A Social Media Performance App ''')
+    st.sidebar.title(''' **Insightify** : A Social Media Performance App ''')
     
 
     # Initialize session state for chat history
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
-
+    if "input_text" not in st.session_state:
+        st.session_state["input_text"] = ""
     # Input field for the user
-    message = st.sidebar.text_area("", placeholder="How can we assist you today?")
+    message = st.sidebar.text_area(value=st.session_state["input_text"], placeholder="How can we assist you today?",key="input_text")
 
     # Button to send the query
     if st.sidebar.button("Give Insights"):
