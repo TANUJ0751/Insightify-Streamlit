@@ -1,11 +1,7 @@
 import requests
-import json
 import streamlit as st
-from dotenv import load_dotenv
-
 import pyperclip
 
-st.title("Hello")
 # Load environment variables
 
 # Load API key from environment variable
