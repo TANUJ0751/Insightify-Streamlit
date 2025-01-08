@@ -86,8 +86,8 @@ def main():
             st.video(gif_html)
             #st.markdown(gif_html, unsafe_allow_html=True)
 
-            gif = Image.open(gif_path)
-            spinner = st.image(gif, caption="Loading...", use_container_width=True)
+            #gif = Image.open(gif_path)
+            #spinner = st.image(gif, caption="Loading...", use_container_width=True)
 
             response = run_flow(message)
             response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
