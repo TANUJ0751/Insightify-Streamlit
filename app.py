@@ -71,7 +71,7 @@ def main():
     )
 
     # Button to send the query
-    if st.sidebar.button("Give Insights", on_click=clear_text):
+    if st.sidebar.button("Give Insights"):
         if not message.strip():
             st.error("Please enter a message")
             return
@@ -84,6 +84,7 @@ def main():
 
             # Append user message and response to chat history
             st.session_state["messages"].append({"user": message, "bot": response_text})
+            clear_text
 
         except Exception as e:
             st.error(str(e))
@@ -106,6 +107,6 @@ def main():
                 
         # Adds a divider for better readability
         st.divider()
-    clear_text()
+    
 if __name__ == "__main__":
     main()
