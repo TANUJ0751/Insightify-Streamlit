@@ -4,12 +4,12 @@ import streamlit as st
 from dotenv import load_dotenv
 
 import pyperclip
-import os
+
 st.title("Hello")
 # Load environment variables
-load_dotenv()
+
 # Load API key from environment variable
-APPLICATION_TOKEN = os.environ.get("APP_TOKEN")
+APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
 
 ENDPOINT = "analysis"
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
