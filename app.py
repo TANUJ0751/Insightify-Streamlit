@@ -1,6 +1,8 @@
 import requests
 import streamlit as st
+import pyperclip
 import os
+from PIL import Image
 
 # Constants
 APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
