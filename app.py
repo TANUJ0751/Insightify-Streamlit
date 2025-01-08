@@ -46,6 +46,11 @@ def main():
         
         .stApp {
             background-color: #1b0e4a; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
         }
         
         [data-testid="stSidebar"] {
@@ -77,7 +82,7 @@ def main():
     )
 
     # Button to send the query
-    if st.sidebar.button("Send",icon=":material/send:",type="secondary"):
+    if st.sidebar.button("Generate",icon=":material/send:",type="secondary"):
         if not message.strip():
             st.error("Please enter a message")
             return
