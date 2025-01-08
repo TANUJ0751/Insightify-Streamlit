@@ -58,7 +58,6 @@ def main():
     if "input_text" not in st.session_state:
         st.session_state["input_text"] = ""
 
-    
     # Input field for the user
     message = st.sidebar.text_area(
         "",
@@ -67,44 +66,48 @@ def main():
         key="input_text",  # Link the input to session state
     )
 
-    # Button to send the query
-    submit_button = st.sidebar.form_submit_button("Submit", icon="paper-plane")
-    if submit_button:
-        if not message.strip():
-            st.error("Please enter a message")
-            return
+    # Form handling
+    with st.sidebar.form(key='my_form'):
+        submit_button = st.form_submit_button("Submit", icon="paper-plane")
 
-        try:
-            with st.spinner("Thinking of That ...."):
-                response = run_flow(message)
-                
-                response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
+        if submit_button:
+            if not message.strip():
+                st.error("Please enter a message")
+                return
 
-            # Append user message and response to chat history
-            st.session_state["messages"].append({"user": message, "bot": response_text})
+            try:
+                with st.spinner("Thinking of That ...."):
+                    response = run_flow(message)
+                    
+                    response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
+
+                # Append user message and response to chat history
+                st.session_state["messages"].append({"user": message, "bot": response_text})
+
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
+
+        # Display chat history
+        st.subheader("Chat History")
+        st.write("--------")
+        bot_color = '#6af778'
+        user_color = '#f4fa57'
+        for chat in st.session_state["messages"]:
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
+                st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>", unsafe_allow_html=True)
             
-
-        except Exception as e:
-            st.error(str(e))
-
-    # Display chat history
-    st.subheader("Chat History")
-    st.write("--------")
-    bot_color = '#6af778'
-    user_color = '#f4fa57'
-    for chat in st.session_state["messages"]:
-        col1, col2 = st.columns([4, 1])
-        with col1:
-            st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
-            st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>", unsafe_allow_html=True)
-        
-        with col2:
-            if st.button(f"Copy", key=chat['bot']):
-                pyperclip.copy(chat['bot'])  # Copy the bot's message to clipboard
-                st.success("Copied!")
+            with col2:
+                if st.button(f"Copy", key=chat['bot']):
+                    pyperclip.copy(chat['bot'])  # Copy the bot's message to clipboard
+                    st.success("Copied!")
                 
-        # Adds a divider for better readability
-        st.divider()
+            # Adds a divider for better readability
+            st.divider()
+        
+        # Clear the text area **after** the divider is created
+        st.session_state["input_text"] = ""
     
 if __name__ == "__main__":
     main()
