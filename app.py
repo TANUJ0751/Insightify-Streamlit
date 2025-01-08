@@ -101,17 +101,10 @@ def main():
     bot_color = '#6af778'
     user_color = '#f4fa57'
     for chat in st.session_state["messages"]:
-        col1, col2 = st.columns([4, 1])
-        with col1:
-            st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
-            st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>", unsafe_allow_html=True)
         
-        with col2:
-            if st.button(f"Copy", key=chat['bot']):
-                pyperclip.copy(chat['bot'])  # Copy the bot's message to clipboard
-                st.success("Copied!")
-                
-        # Adds a divider for better readability
+        
+        st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>", unsafe_allow_html=True)
         st.divider()
     
 if __name__ == "__main__":
