@@ -80,7 +80,7 @@ def main():
 
         try:
             current_dir = os.path.dirname(os.path.abspath(__file__))
-            assets_folder = os.path.join(current_dir, "assets")
+            assets_folder = os.path.join(current_dir, "Assets")
             gif_path = os.path.join(assets_folder, "KEaF.gif")
             gif = Image.open(gif_path)
             spinner = st.image(gif, caption="Loading...", use_column_width=True)
