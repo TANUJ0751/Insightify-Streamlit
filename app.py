@@ -58,10 +58,7 @@ def main():
     if "input_text" not in st.session_state:
         st.session_state["input_text"] = ""
 
-    # Callback function to clear the text area
-    def clear_text():
-        st.session_state["input_text"] = ""
-
+    
     # Input field for the user
     message = st.sidebar.text_area(
         "",
@@ -71,7 +68,8 @@ def main():
     )
 
     # Button to send the query
-    if st.sidebar.button("Give Insights"):
+    submit_button = st.sidebar.form_submit_button("Submit", icon="paper-plane")
+    if submit_button:
         if not message.strip():
             st.error("Please enter a message")
             return
@@ -84,7 +82,7 @@ def main():
 
             # Append user message and response to chat history
             st.session_state["messages"].append({"user": message, "bot": response_text})
-            clear_text()
+            
 
         except Exception as e:
             st.error(str(e))
