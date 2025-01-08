@@ -83,7 +83,8 @@ def main():
             assets_folder = os.path.join(current_dir, "Assets")
             gif_path = os.path.join(assets_folder, "spinner.gif")
             gif_html = f'<img src="{gif_path}" width="100%">'
-            st.markdown(gif_html, unsafe_allow_html=True)
+            st.video(gif_html)
+            #st.markdown(gif_html, unsafe_allow_html=True)
 
             gif = Image.open(gif_path)
             spinner = st.image(gif, caption="Loading...", use_container_width=True)
