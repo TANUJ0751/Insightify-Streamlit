@@ -1,12 +1,17 @@
 import requests
 import streamlit as st
+import pyperclip
 
 # Load environment variables
+
+# Load API key from environment variable
 APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
 
+ENDPOINT = "analysis"
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
 LANGFLOW_ID = "a429dc71-ad2c-4b98-b5b3-08779b951c6a"
-ENDPOINT = "social_media"
+FLOW_ID = "b2965fbd-2779-4c01-b07d-3961555143c6"
+ENDPOINT = "social_media" # The endpoint name of the flow
 
 # Function to run the flow
 def run_flow(message: str) -> dict:
@@ -18,55 +23,94 @@ def run_flow(message: str) -> dict:
     }
     headers = {"Authorization": "Bearer " + APPLICATION_TOKEN, "Content-Type": "application/json"}
     response = requests.post(api_url, json=payload, headers=headers)
-    response.raise_for_status()  # Raise error if the request fails
     return response.json()
 
 # Main function
 def main():
-    st.sidebar.title("**Insightify** : A Social Media Performance App")
-
-    # Initialize session state
+    st.markdown(
+        """
+        <style>
+        .stButton>button:hover {
+            background-color: #1b0e4a; 
+            color: white; 
+            border-color: #f4fa57;
+        }
+        .stButton>button:active {
+        border-color: white;  /* Border color after clicking */
+        color: white;  /* Text color after clicking */
+        }
+        .stButton{
+        border-color: white;  /* Border color after clicking */
+        color: white;  /* Text color after clicking */
+        }
+        
+        .stApp {
+            background-color: #1b0e4a; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        
+        [data-testid="stSidebar"] {
+            background-color: #302a47; 
+        }
+        header {
+            background-color: #1b0e4a !important;
+        }
+        
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.sidebar.title(''' **Insightify** : A Social Media Performance App ''')
+    
+    # Initialize session state for chat history
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
-    if "loading" not in st.session_state:
-        st.session_state["loading"] = False
-    if "current_message" not in st.session_state:
-        st.session_state["current_message"] = ""
+    if "input_text" not in st.session_state:
+        st.session_state["input_text"] = ""
 
-    # Handle spinner and API call
-    if st.session_state["loading"]:
-        with st.spinner("Processing your request... Please wait."):
-            try:
-                response = run_flow(st.session_state["current_message"])
-                response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
-                st.session_state["messages"].append({"user": st.session_state["current_message"], "bot": response_text})
-            except Exception as e:
-                st.error(f"Error: {e}")
-            finally:
-                st.session_state["loading"] = False
-                st.session_state["current_message"] = ""
-
-    # Input area
+    
+    # Input field for the user
     message = st.sidebar.text_area(
-        "Ask a question:",
-        value="",
+        "",
+        value=st.session_state["input_text"],
         placeholder="How can we assist you today?",
+        key="input_text",  # Link the input to session state
     )
 
-    if st.sidebar.button("Generate"):
+    # Button to send the query
+    if st.sidebar.button("Generate",icon=":material/send:",type="secondary"):
         if not message.strip():
-            st.error("Please enter a valid message.")
-        else:
-            st.session_state["current_message"] = message
-            st.session_state["loading"] = True
-            st.experimental_rerun()
+            st.error("Please enter a message")
+            return
+
+        try:
+            with st.spinner("Processing..."):
+                response = run_flow(message)
+                
+                response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
+
+            # Append user message and response to chat history
+            st.session_state["messages"].append({"user": message, "bot": response_text})
+            
+
+        except Exception as e:
+            st.error(str(e))
 
     # Display chat history
     st.subheader("Chat History")
+    st.write("--------")
+    bot_color = '#6af778'
+    user_color = '#f4fa57'
     for chat in st.session_state["messages"]:
-        st.markdown(f"**You:** {chat['user']}")
-        st.markdown(f"**Bot:** {chat['bot']}")
+        
+        
+        st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>", unsafe_allow_html=True)
         st.divider()
-
+    
 if __name__ == "__main__":
     main()
