@@ -58,6 +58,10 @@ def main():
     if "input_text" not in st.session_state:
         st.session_state["input_text"] = ""
 
+    # Callback function to clear the text area
+    def clear_text():
+        st.session_state["input_text"] = ""
+
     # Input field for the user
     message = st.sidebar.text_area(
         "",
@@ -67,7 +71,7 @@ def main():
     )
 
     # Button to send the query
-    if st.sidebar.button("Give Insights"):
+    if st.sidebar.button("Give Insights", on_click=clear_text):
         if not message.strip():
             st.error("Please enter a message")
             return
@@ -102,9 +106,5 @@ def main():
                 
         # Adds a divider for better readability
         st.divider()
-    
-    # Clear the text area **after** the divider is rendered
-    st.session_state["input_text"] = ""  # Ensure this happens after the divider
-
 if __name__ == "__main__":
     main()
