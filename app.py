@@ -39,6 +39,10 @@ def main():
         border-color: white;  /* Border color after clicking */
         color: white;  /* Text color after clicking */
         }
+        .stButton{
+        border-color: white;  /* Border color after clicking */
+        color: white;  /* Text color after clicking */
+        }
         
         .stApp {
             background-color: #1b0e4a; 
