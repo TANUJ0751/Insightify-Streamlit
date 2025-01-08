@@ -5,10 +5,8 @@ import pyperclip
 # Load environment variables
 APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
 
-ENDPOINT = "analysis"
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
 LANGFLOW_ID = "a429dc71-ad2c-4b98-b5b3-08779b951c6a"
-FLOW_ID = "b2965fbd-2779-4c01-b07d-3961555143c6"
 ENDPOINT = "social_media"  # The endpoint name of the flow
 
 # Function to run the flow
@@ -28,29 +26,6 @@ def main():
     st.markdown(
         """
         <style>
-        .stButton>button:hover {
-            background-color: #1b0e4a; 
-            color: white; 
-            border-color: #f4fa57;
-        }
-        .stButton>button:active {
-            border-color: white;  /* Border color after clicking */
-            color: white;  /* Text color after clicking */
-        }
-        .stApp {
-            background-color: #1b0e4a; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-        [data-testid="stSidebar"] {
-            background-color: #302a47; 
-        }
-        header {
-            background-color: #1b0e4a !important;
-        }
         .custom-spinner {
             position: fixed;
             top: 0;
@@ -81,7 +56,7 @@ def main():
     )
     st.sidebar.title("**Insightify** : A Social Media Performance App")
 
-    # Initialize session state for chat history and loader
+    # Initialize session state
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
     if "input_text" not in st.session_state:
@@ -89,36 +64,7 @@ def main():
     if "loading" not in st.session_state:
         st.session_state["loading"] = False
 
-    # Input field for the user
-    message = st.sidebar.text_area(
-        "",
-        value=st.session_state["input_text"],
-        placeholder="How can we assist you today?",
-        key="input_text",  # Link the input to session state
-    )
-
-    # Button to send the query
-    if st.sidebar.button("Generate", icon=":material/send:", type="secondary"):
-        if not message.strip():
-            st.error("Please enter a message")
-            return
-
-        # Show the spinner
-        st.session_state["loading"] = True
-
-        try:
-            response = run_flow(message)
-            response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
-
-            # Append user message and response to chat history
-            st.session_state["messages"].append({"user": message, "bot": response_text})
-        except Exception as e:
-            st.error(str(e))
-        finally:
-            # Hide the spinner after processing
-            st.session_state["loading"] = False
-
-    # Display the loader
+    # Show the spinner if loading is True
     if st.session_state["loading"]:
         spinner_html = """
         <div class="custom-spinner">
@@ -126,14 +72,48 @@ def main():
         </div>
         """
         st.markdown(spinner_html, unsafe_allow_html=True)
+        return
+
+    # Input field for the user
+    message = st.sidebar.text_area(
+        "",
+        value=st.session_state["input_text"],
+        placeholder="How can we assist you today?",
+        key="input_text",
+    )
+
+    # Button to send the query
+    if st.sidebar.button("Generate", type="secondary"):
+        if not message.strip():
+            st.error("Please enter a message")
+            return
+
+        # Set loading state to True and rerun the script
+        st.session_state["loading"] = True
+        st.session_state["current_message"] = message
+        st.experimental_rerun()
+
+    # If processing is completed
+    if "current_message" in st.session_state and st.session_state["loading"]:
+        try:
+            response = run_flow(st.session_state["current_message"])
+            response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
+
+            # Append user message and response to chat history
+            st.session_state["messages"].append({"user": st.session_state["current_message"], "bot": response_text})
+        except Exception as e:
+            st.error(str(e))
+        finally:
+            # Set loading to False after processing
+            st.session_state["loading"] = False
+            st.experimental_rerun()
 
     # Display chat history
     st.subheader("Chat History")
-    st.write("--------")
     bot_color = "#6af778"
     user_color = "#f4fa57"
     for chat in st.session_state["messages"]:
-        st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
         st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>", unsafe_allow_html=True)
         st.divider()
 
