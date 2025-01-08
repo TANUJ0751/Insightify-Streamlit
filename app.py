@@ -68,8 +68,7 @@ def main():
     )
 
     # Button to send the query
-    submit_button = st.sidebar.form_submit_button("Submit", icon="paper-plane")
-    if submit_button:
+    if st.sidebar.button("Send"):
         if not message.strip():
             st.error("Please enter a message")
             return
