@@ -81,7 +81,7 @@ def main():
         try:
             current_dir = os.path.dirname(os.path.abspath(__file__))
             assets_folder = os.path.join(current_dir, "Assets")
-            gif_path = os.path.join(assets_folder, "KEaF.gif")
+            gif_path = os.path.join(assets_folder, "spinner.gif")
             gif_html = f'<img src="{gif_path}" width="100%">'
             st.markdown(gif_html, unsafe_allow_html=True)
 
