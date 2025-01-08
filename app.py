@@ -73,7 +73,7 @@ def main():
     )
 
     # Button to send the query
-    if st.sidebar.button("Send"):
+    if st.sidebar.button("Send",icon="paper-plane"):
         if not message.strip():
             st.error("Please enter a message")
             return
