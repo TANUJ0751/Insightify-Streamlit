@@ -88,7 +88,7 @@ def main():
             return
 
         try:
-            with st.spinner("Thinking of That ...."):
+            with st.spinner("Processing..."):
                 response = run_flow(message)
                 
                 response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
