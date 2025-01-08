@@ -59,7 +59,7 @@ def main():
         st.session_state["input_text"] = ""
 
     # Input field for the user
-    message = st.sidebar.text_area(
+    message = st.sidebar.form(
         "",
         value=st.session_state["input_text"],
         placeholder="How can we assist you today?",
