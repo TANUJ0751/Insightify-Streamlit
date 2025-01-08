@@ -9,7 +9,7 @@ APPLICATION_TOKEN = st.secrets["APP_TOKEN"]
 
 ENDPOINT = "analysis"
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
-LANGFLOW_ID = "a429dc71-ad2c-4b98-b5b3-08779b951c6a"
+LANGFLOW_ID = "a429dc71-ad2c-4b98-b5b3-08779b951c6"
 FLOW_ID = "b2965fbd-2779-4c01-b07d-3961555143c6"
 ENDPOINT = "social_media"  # The endpoint name of the flow
 
@@ -81,6 +81,22 @@ def main():
         """,
         unsafe_allow_html=True,
     )
+
+    # Spinner state in session
+    if "show_spinner" not in st.session_state:
+        st.session_state["show_spinner"] = False
+
+    # Show spinner if active
+    if st.session_state["show_spinner"]:
+        st.markdown(
+            """
+            <div class="custom-spinner">
+                <div class="spinner"></div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
     st.sidebar.title("**Insightify** : A Social Media Performance App")
 
     # Initialize session state for chat history
@@ -104,13 +120,11 @@ def main():
             return
 
         try:
-            spinner_html = """
-            <div class="custom-spinner">
-                <div class="spinner"></div>
-            </div>
-            """
-            st.markdown(spinner_html, unsafe_allow_html=True)
-            
+            # Show spinner
+            st.session_state["show_spinner"] = True
+            st.experimental_rerun()
+
+            # Run the API call
             response = run_flow(message)
             response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
 
@@ -119,6 +133,10 @@ def main():
 
         except Exception as e:
             st.error(str(e))
+        finally:
+            # Hide spinner
+            st.session_state["show_spinner"] = False
+            st.experimental_rerun()
 
     # Display chat history
     st.subheader("Chat History")
