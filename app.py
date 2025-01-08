@@ -75,44 +75,45 @@ def main():
         placeholder="How can we assist you today?",
         key="input_text",  # Link the input to session state
     )
-
+    scol1,scol2,scol3=st.sidebar.columns([1,1,1])
+    with scol2:
     # Button to send the query
-    if st.sidebar.button("Send",icon=":material/send:",type="secondary"):
-        if not message.strip():
-            st.error("Please enter a message")
-            return
+        if st.sidebar.button("Send",icon=":material/send:",type="secondary"):
+            if not message.strip():
+                st.error("Please enter a message")
+                return
 
-        try:
-            with st.spinner("Thinking of That ...."):
-                response = run_flow(message)
+            try:
+                with st.spinner("Thinking of That ...."):
+                    response = run_flow(message)
+                    
+                    response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
+
+                # Append user message and response to chat history
+                st.session_state["messages"].append({"user": message, "bot": response_text})
                 
-                response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
 
-            # Append user message and response to chat history
-            st.session_state["messages"].append({"user": message, "bot": response_text})
+            except Exception as e:
+                st.error(str(e))
+
+        # Display chat history
+        st.subheader("Chat History")
+        st.write("--------")
+        bot_color = '#6af778'
+        user_color = '#f4fa57'
+        for chat in st.session_state["messages"]:
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
+                st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>", unsafe_allow_html=True)
             
-
-        except Exception as e:
-            st.error(str(e))
-
-    # Display chat history
-    st.subheader("Chat History")
-    st.write("--------")
-    bot_color = '#6af778'
-    user_color = '#f4fa57'
-    for chat in st.session_state["messages"]:
-        col1, col2 = st.columns([4, 1])
-        with col1:
-            st.markdown(f"<h5 ><strong style='color:{user_color};'>You:</strong> {chat['user']}</h5>", unsafe_allow_html=True)
-            st.markdown(f"<h5><strong style='color:{bot_color};'>Bot:</strong> {chat['bot']}</h5>", unsafe_allow_html=True)
-        
-        with col2:
-            if st.button(f"Copy", key=chat['bot']):
-                pyperclip.copy(chat['bot'])  # Copy the bot's message to clipboard
-                st.success("Copied!")
-                
-        # Adds a divider for better readability
-        st.divider()
+            with col2:
+                if st.button(f"Copy", key=chat['bot']):
+                    pyperclip.copy(chat['bot'])  # Copy the bot's message to clipboard
+                    st.success("Copied!")
+                    
+            # Adds a divider for better readability
+            st.divider()
     
 if __name__ == "__main__":
     main()
