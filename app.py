@@ -106,5 +106,6 @@ def main():
                 
         # Adds a divider for better readability
         st.divider()
+    clear_text()
 if __name__ == "__main__":
     main()
