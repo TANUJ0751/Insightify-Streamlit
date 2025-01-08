@@ -19,6 +19,7 @@ def run_flow(message: str) -> dict:
     }
     headers = {"Authorization": "Bearer " + APPLICATION_TOKEN, "Content-Type": "application/json"}
     response = requests.post(api_url, json=payload, headers=headers)
+    response.raise_for_status()  # Raise an error if the request fails
     return response.json()
 
 # Main function
@@ -59,10 +60,10 @@ def main():
     # Initialize session state
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
-    if "input_text" not in st.session_state:
-        st.session_state["input_text"] = ""
     if "loading" not in st.session_state:
         st.session_state["loading"] = False
+    if "current_message" not in st.session_state:
+        st.session_state["current_message"] = ""
 
     # Show the spinner if loading is True
     if st.session_state["loading"]:
@@ -72,14 +73,13 @@ def main():
         </div>
         """
         st.markdown(spinner_html, unsafe_allow_html=True)
-        return
+        st.stop()  # Stops further execution until rerun
 
     # Input field for the user
     message = st.sidebar.text_area(
         "",
-        value=st.session_state["input_text"],
+        value="",
         placeholder="How can we assist you today?",
-        key="input_text",
     )
 
     # Button to send the query
@@ -88,25 +88,27 @@ def main():
             st.error("Please enter a message")
             return
 
-        # Set loading state to True and rerun the script
+        # Set loading state to True and save the current message
         st.session_state["loading"] = True
         st.session_state["current_message"] = message
         st.experimental_rerun()
 
-    # If processing is completed
-    if "current_message" in st.session_state and st.session_state["loading"]:
+    # Process the API response if a message is pending
+    if st.session_state["current_message"] and not st.session_state["loading"]:
         try:
             response = run_flow(st.session_state["current_message"])
             response_text = response["outputs"][0]["outputs"][0]["results"]["message"]["text"]
 
             # Append user message and response to chat history
             st.session_state["messages"].append({"user": st.session_state["current_message"], "bot": response_text})
+
+            # Clear the current message
+            st.session_state["current_message"] = ""
+
         except Exception as e:
-            st.error(str(e))
+            st.error(f"Error: {e}")
         finally:
-            # Set loading to False after processing
             st.session_state["loading"] = False
-            st.experimental_rerun()
 
     # Display chat history
     st.subheader("Chat History")
