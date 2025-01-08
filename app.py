@@ -50,7 +50,7 @@ def main():
         """,
         unsafe_allow_html=True,
     )
-    st.sidebar.title(''' **Insightly** : A Social Media Performance App ''')
+    st.sidebar.title(''' **Insightify** : A Social Media Performance App ''')
     
     # Initialize session state for chat history and text input
     if "messages" not in st.session_state:
