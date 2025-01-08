@@ -33,6 +33,7 @@ def main():
         .stButton>button:hover {
             background-color: #1b0e4a; 
             color: white; 
+            border-color: #f4fa57;
         }
         
         .stApp {
