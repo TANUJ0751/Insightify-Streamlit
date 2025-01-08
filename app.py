@@ -84,7 +84,7 @@ def main():
 
             # Append user message and response to chat history
             st.session_state["messages"].append({"user": message, "bot": response_text})
-            clear_text
+            clear_text()
 
         except Exception as e:
             st.error(str(e))
