@@ -1,4 +1,4 @@
-python-dotenv
-streamlit
-requests
-pyperclip
+python-dotenv==0.21.0
+streamlit==1.41.0
+requests==2.32.3
+pyperclip==1.9.0
