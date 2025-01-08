@@ -61,7 +61,6 @@ def main():
     # Input field for the user
     message = st.sidebar.text_area(
         "",
-        value=st.session_state["input_text"],
         placeholder="How can we assist you today?",
         key="input_text",  # Link the input to session state
     )
